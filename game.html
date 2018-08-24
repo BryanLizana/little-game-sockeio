@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Game test</title>
+</head>
+<body>   
+    <style>
+    img{
+        position:relative;
+            display:block;
+    }
+    </style>
+
+    <div id="table" style="border: solid;height: 300px;">
+        <img id="ball1" style="border: solid;" ></img>
+    </div>
+
+    <br>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
+    <script>
+        var socket = io('http://node.local:3030');
+        socket.on('onMoveBall',function (x,y) { 
+            document.getElementById("ball1").style.left=String(x)+"px";
+            document.getElementById("ball1").style.top=String(y)+"px";
+        });
+
+        // foreach
+        var mousePosition;
+        var offset = [0,0];
+        var div;
+        var isDown = false;
+
+        div = document.createElement("div");
+        div.style.position = "absolute";
+        div.style.left = "0px";
+        div.style.top = "0px";
+        div.style.width = "16px";
+        div.style.height = "16px";
+        div.style.background = "red";
+        div.style.color = "blue";
+        div.id = "div_real";
+
+        document.body.appendChild(div);
+
+        div.addEventListener('mousedown', function(e) {
+            isDown = true;
+            offset = [
+                div.offsetLeft - e.clientX,
+                div.offsetTop - e.clientY
+            ];
+        }, true);
+
+        document.addEventListener('mouseup', function() {
+            isDown = false;
+        }, true);
+
+        document.addEventListener('mousemove', function(event) {
+            event.preventDefault();
+            if (isDown) {
+                mousePosition = {
+
+                    x : event.clientX,
+                    y : event.clientY
+
+                };
+                div.style.left = (mousePosition.x + offset[0]) + 'px';
+                div.style.top  = (mousePosition.y + offset[1]) + 'px';
+
+                let div_real_t = div.style.top;
+                let div_real_h = div.style.left;
+
+                 div_real_t = div_real_t.replace('px','');
+                 div_real_h = div_real_h.replace('px','');
+
+                socket.emit('emitPumBall', div_real_t,div_real_h );
+                console.log(div_real_t,div_real_h);
+            }
+        }, true);    
+    
+    </script> 
+
+</body>
+</html>

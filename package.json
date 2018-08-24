@@ -1,0 +1,14 @@
+{
+  "name": "html",
+  "version": "1.0.0",
+  "description": "Test Init",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "BryanMe",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^2.1.1"
+  }
+}

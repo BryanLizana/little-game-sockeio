@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Game test</title>
+</head>
+<body>   
+    <style>
+    img{
+        position:relative;
+            display:block;
+    }
+    </style>
+
+    <div id="table" style="border: solid;height: 300px;">
+        <img id="ball1" style="border: solid;" ></img>
+    </div>
+
+    <br>
+    
+    <script>
+
+
+        var y=0;           
+        var x=0;
+        var controlY=1;  
+        var controlX=1;  
+        var velocidad=1;
+ 
+        var intervalo=setInterval("mover()",10);
+        var b_h = document.getElementById("ball1").offsetHeight;
+        
+
+    </script> 
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
+    <script>
+        var socket = io('http://node.local:3030');
+        var div_real_t_main = null;
+        var div_real_h_main = null;
+
+        socket.on('onPumBall',function (div_real_t,div_real_h) { 
+
+            div_real_t_main = div_real_t;
+            div_real_h_main = div_real_h;
+                
+        });
+        
+        function mover(){
+            //Eje Y
+            let div_real_t ;
+            let div_real_h ;
+
+            if (div_real_t_main != null &&  div_real_h_main != null) {
+                 div_real_t = div_real_t_main;
+                 div_real_h = div_real_h_main;
+            }
+
+            if(controlY==1){ 
+                y+=velocidad;
+            }else {        
+                y-=velocidad;
+            }
+
+            if(y<=0){
+
+                controlY=1;
+                y=0;
+            }else if(y>=document.getElementById("table").offsetHeight-b_h){ 
+ 
+                controlY=0;
+                y=document.getElementById("table").offsetHeight-b_h;
+            }
+            
+            //Eje X
+            if(controlX==1){ 
+                x+=velocidad;
+            }else{         
+                x-=velocidad;
+            }
+            if(x<=0){
+                controlX=1;
+                x=0;
+            }else if(x>=document.getElementById("table").offsetWidth-b_h){
+                controlX=0;
+                x=document.getElementById("table").offsetWidth-b_h;
+            }
+
+            //Precisión
+            // console.log(x +"=XX="+ Number(div_real_h - 11));
+            // console.log(y +"=YY="+ Number(div_real_t - 11));
+
+            div_real_h = Number(div_real_h - 11);
+            div_real_t = Number(div_real_t - 11);
+
+            if ( (x < Number(div_real_h + 8) && x > Number(div_real_h - 8) ) && (y < Number(div_real_t + 8) && y > Number(div_real_t - 8) )  ) {
+
+                controlY = (controlY == 0) ? 1 : 0;
+
+            }
+
+            socket.emit('emmitMoveBall',x,y);
+
+            document.getElementById("ball1").style.left=String(x)+"px";
+            document.getElementById("ball1").style.top=String(y)+"px";
+
+        }
+    </script>
+</body>
+</html>
