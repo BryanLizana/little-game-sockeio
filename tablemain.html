@@ -22,14 +22,13 @@
     
     <script>
 
-
         var y=0;           
         var x=0;
         var controlY=1;  
         var controlX=1;  
         var velocidad=1;
  
-        var intervalo=setInterval("mover()",10);
+        var intervalo=setInterval("mover()",1);
         var b_h = document.getElementById("ball1").offsetHeight;
         
 
@@ -96,7 +95,7 @@
             div_real_h = Number(div_real_h - 11);
             div_real_t = Number(div_real_t - 11);
 
-            if ( (x < Number(div_real_h + 8) && x > Number(div_real_h - 8) ) && (y < Number(div_real_t + 8) && y > Number(div_real_t - 8) )  ) {
+            if ( (x < Number(div_real_h + 50) && x > Number(div_real_h - 50) ) && (y < Number(div_real_t + 8) && y > Number(div_real_t - 8) )  ) {
 
                 controlY = (controlY == 0) ? 1 : 0;
 

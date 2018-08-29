@@ -19,7 +19,9 @@
     </div>
 
     <br>
-    
+    <div id="DIV1"></div>
+    <div id="DIV2"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.dev.js"></script>
     <script>
         var socket = io('http://node.local:3030');
@@ -34,23 +36,50 @@
         var div;
         var isDown = false;
 
-        div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.left = "0px";
-        div.style.top = "0px";
-        div.style.width = "16px";
-        div.style.height = "16px";
-        div.style.background = "red";
-        div.style.color = "blue";
-        div.id = "div_real";
+        div1 = document.getElementById("DIV1");
 
-        document.body.appendChild(div);
+        div2 = document.getElementById("DIV2");//contrincante
 
-        div.addEventListener('mousedown', function(e) {
+        var number = 1;
+        var notMove = 0;
+
+       
+
+        
+        socket.on('CompetidorBe',function (number_fn) { 
+            number = number_fn;
+
+            div1.style.position = "absolute";
+            div1.style.left = (number == 1 )?"50px" :"50px";
+            div1.style.top = (number == 1 )?"20px" :"270px";
+            div1.style.width = "50px";
+            div1.style.height = "16px";
+            div1.style.background = "red" ;
+        
+            div2.style.position = "absolute";
+            div2.style.left = (number == 0 )?"50px" :"50px";
+            div2.style.top = (number == 0 )?"20px" :"270px";
+            div2.style.width = "50px";
+            div2.style.height = "16px";
+            div2.style.background = "black";
+            
+
+        });
+
+        socket.emit('BeCompetidor',number); 
+
+        socket.on('CompetidorMove',function (mousePosition,notMove) {
+            if (notMove != number ) {
+             div2.style.left = (mousePosition.x + offset[0]) + 'px';                
+            }                
+        });    
+        document.body.appendChild(div1);
+
+        div1.addEventListener('mousedown', function(e) {
             isDown = true;
             offset = [
-                div.offsetLeft - e.clientX,
-                div.offsetTop - e.clientY
+                div1.offsetLeft - e.clientX,
+                // div1.offsetTop - e.clientY
             ];
         }, true);
 
@@ -62,22 +91,23 @@
             event.preventDefault();
             if (isDown) {
                 mousePosition = {
-
                     x : event.clientX,
-                    y : event.clientY
-
+                    // y : event.clientY
                 };
-                div.style.left = (mousePosition.x + offset[0]) + 'px';
-                div.style.top  = (mousePosition.y + offset[1]) + 'px';
+                div1.style.left = (mousePosition.x + offset[0]) + 'px';
+                // div.style.top  = (mousePosition.y + offset[1]) + 'px';
 
-                let div_real_t = div.style.top;
-                let div_real_h = div.style.left;
+                let div_real_t = div1.style.top;
+                let div_real_h = div1.style.left;
+
 
                  div_real_t = div_real_t.replace('px','');
                  div_real_h = div_real_h.replace('px','');
 
                 socket.emit('emitPumBall', div_real_t,div_real_h );
-                console.log(div_real_t,div_real_h);
+                socket.emit('SetCompetidorMove',mousePosition,number); 
+
+                // console.log(div_real_t,div_real_h);
             }
         }, true);    
     

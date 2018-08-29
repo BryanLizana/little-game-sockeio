@@ -16,6 +16,7 @@ function handler (req, res) {
     res.end(data);
   });
 }
+var number_competidor = 0;
 
 
 io.on('connection', function (socket) {
@@ -27,18 +28,36 @@ io.on('connection', function (socket) {
 
      })
 
-
      socket.on('emmitMoveBall',function (x,y) { 
       // console.log(text+'.');
-
         io.emit('onMoveBall',x,y);
-
      })
-
 
      socket.on('emitPumBall',function (x,y) { 
         io.emit('onPumBall',x,y);
 
      })
+
+    socket.on('BeCompetidor',function (number) { 
+
+      if (number_competidor == number) {
+        number_competidor  = 0;
+      }else{
+        number_competidor  = 1;
+      }      
+      socket.emit('CompetidorBe',number_competidor);
+
+    })
+
+    socket.on('SetCompetidorMove',function (number,notMove) { 
+
+      io.emit('CompetidorMove',number,notMove);
+
+    })
+    
+
+     
+
+     
 
 });
